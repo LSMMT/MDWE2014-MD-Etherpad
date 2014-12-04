@@ -1,0 +1,24 @@
+
+{
+    "name":"ep_heatmap",
+    "version":"0.0.3",
+    "keywords":"heatmap, remote control, beamer mode, autoscroll, multidevice, mobile device, etherpad-lite plugin",
+    "description":"Adds a heatmap for recent activities with multi device and remote control features",
+    
+    "contributors": [{
+        "name":"Armin",
+        "email":"eenuep@gmail.com"
+    }],
+    
+    "repository": {
+        "type":"git",
+        "url":"https://github.com/hb0/etherpad-lite"
+    },
+     
+    "dependencies":{},
+    "engines": {
+        "node":"*"
+    },
+    
+   "license": "MIT"
+}
