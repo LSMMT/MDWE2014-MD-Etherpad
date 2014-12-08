@@ -1,49 +1,114 @@
 /*
  *
- * Handle client hooks: acePostWriteDomLineHTML
+ * Handle client hooks
  *
  */
-var debug = true, initHM = true, pastInitDelay, HMlines = new Array(); // use jquery for multidim.arrays I guess?
- 
- 
-exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {		
-  //console.log("acePostWriteDomLineHTML => node: "+args.node.id);
-  
-  // while HMinit-process create array
+
+var debug = true, initHM = false, initDelay=0, lineNumber=-1, initChangeset = new Array();
+var ep_activity = new Array();
+
+
+// Gets called every second
+exports.aceEditEvent = function(hook_name, args, cb) {
+  // Decay of activity
+  for(var i=0; i<ep_activity.length; i++) {
+    if (ep_activity[i][1]>0) {
+      var temp_debug = ep_activity[i][1];
+      ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
+      //console.log("decay: "+temp_debug+" --> "+ep_activity[i][1]);
+    }
+  }
+
+  // Gets called when changeset received
+  if ((args.callstack.docTextChanged == true || args.callstack.type == "applyChangesToBase")) {
+    if (args.rep.selEnd) {
+      // Preinit EditEvent - used to determin first change after init
+      if (!(initDelay<0)) initChangeset = args.rep.alines;
+      else {
+        // Trace activity after init process
+        var changedLine = findChangedLine(args.rep.alines);
+        ep_activity[changedLine][0] = args.rep.alines[changedLine]; // save new changeset
+        ep_activity[changedLine][1]++; // increment activity
+        console.table(ep_activity);
+
+        //console.log("aceEditEvent-rep-OBJECT: "+JSON.stringify(args.rep))
+        //console.log("aceEditEvent-documentAttributeManager-OBJECT: "+JSON.stringify(args.documentAttributeManager ))
+        //console.log("aceEditEvent-callstack -OBJECT: "+JSON.stringify(args.callstack  ))
+        //ERROR:createChangeset(args.rep.alines[changedLine]);
+      }
+    }
+  }
+  return cb();
+};
+
+// Helper function to find the changed value between two arrays
+function findChangedLine(newChangesets) {
+  console.table(newChangesets); // new changeset before changes
+  for(var i=0; i<newChangesets.length; i++) {
+    if (newChangesets[i] !== ep_activity[i][0]) {
+      console.log("Changeline ("+i+"): "+ep_activity[i][0]+" --> "+newChangesets[i]);
+      if (ep_activity[i-1] != undefined && newChangesets[i-1] != undefined) console.log("(preLine) "+ep_activity[i-1][0]+" --> "+newChangesets[i-1]);
+      if (ep_activity[i+1] != undefined && newChangesets[i+1] != undefined) console.log("(nextLine) "+ep_activity[i+1][0]+" --> "+newChangesets[i+1]);
+
+      if (newChangesets[i] === "*1|1+1") addedLine(i, "*1|1+1"); // ENTER button  || newChangesets[i+1] === "|1+1"
+      else if (ep_activity[i][0] === "*1|1+1" || ep_activity[i][0] === "|1+1") droppedLine(i); // RETURN button
+
+      return i;
+    }
+  }
+}
+
+// Helper function: new line added (ENTER) -> update ep_activity
+function addedLine(position, chset) {
+  ep_activity.splice(position, 0, new Array(chset, 0)); // splice(index, count_to_remove, addelement1, addelement2, ...)
+}
+
+// Helper function: line dropped (RETURN, buggy) -> update ep_activity
+function droppedLine(position) {
+  ep_activity.splice(position, 1); // splice(index, count_to_remove, addelement1, addelement2, ...)
+}
+
+
+// Gets called when DOM line is written -> for Init process
+exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
+  var lineContent = args.node.children[0].innerText,
+      lineId = args.node.id.substring(10);
+
+  // Create array containing padlines
   if (initHM) {
-    console.log("init line: "+args.node.id.substring(10));
-    HMlines[args.node.id.substring(10)-1] = 0;
+    lineNumber++;
+    console.log("init lineId ("+lineId+") lineNumber("+lineNumber+") lineContent("+(lineContent=="\n"?"\\n":lineContent)+")");
+    createLineArray(lineNumber);
+    initDelay--;
+    if (initDelay<1) { initHM=false; initDelay--; console.log("Init done: ep_activity[line][changeset, activity] \n"); console.table(ep_activity); }
   }
-  
-  // after init only checkout changes
-  else if (pastInitDelay>0) pastInitDelay--;
-  else  {
-    console.log("<-- (obj) change in DIV not line ("+args.node.id.substring(10)+")!      changeset ala: Z:20y>1|5=6c*0+1$g");
-  }
-  
+
+  // Count initDelay
+  else if (initDelay>=0) initDelay++;
   return cb();
 };
 
 
-exports.postAceInit = function(hook_name, args, cb) {		
-  //console.log("postAceInit-event"); // wieso kommen die aPW-Events beim Laden doppelt? vor/nach pAI
-  
-  console.log("Init done - HMlines("+HMlines.length+"): "+JSON.stringify(HMlines));
-  initHM = false; // init done
-  pastInitDelay = HMlines.length-1; // -1 wieso auch immer ... (aPW-Events beim Laden doppelt)
-  
-  createNumericModel(); // from array
-  // generate first heatmap
-  
-  return cb();
+
+// Helper function for init array process
+function createLineArray(line) {
+  var lineArray = new Array(initChangeset[line], 0); // lineArray[changeset, activity]
+  ep_activity.push(lineArray);
 };
-
-
-/*
-exports.aceStartLineAndCharForPoint = function (hook_name, args, cb) {	
-  //console.log("aceStartLineAndCharForPoint-event");
-  // mist - aceStartLineAndCharForPoint-Event zeigt nur die akt. Pointer-Position an!
-  //console.log("rep: "+JSON.stringify(args.rep.selStart)+" to "+JSON.stringify(args.rep.selEnd));
-  
-  return cb();
+/* <-- ohne einzelne Buchstaben zu betrachten
+function pushStringToArray(content, line) {
+  var lineArray = content.split(''); // split to single chars
+  lineArray.unshift(line); // lineArray[lineNumber, char0, char1, char2, ...]
+  ep_content.push(lineArray);
 };*/
+
+
+// Gets called when init process can start
+exports.postAceInit = function(hook_name, args, cb) {
+  initDelay--;
+  console.log("postAceInit-event");
+  console.log("start Init - initDelay("+initDelay+")");
+  initHM = true;
+  // generateHeatmap ( createNumericModel(ep_activity) )
+  return cb();
+};

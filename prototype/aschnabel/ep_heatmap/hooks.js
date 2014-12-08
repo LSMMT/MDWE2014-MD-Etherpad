@@ -4,8 +4,9 @@
  *
  */
 
-var eejs = require('ep_etherpad-lite/node/eejs');
+//var Changeset = require("ep_etherpad-lite/static/js/Changeset");
 //var settings = require('ep_etherpad-lite/node/utils/Settings');
+var eejs = require('ep_etherpad-lite/node/eejs');
 
 
 // Client js
@@ -30,3 +31,8 @@ exports.eejsBlock_styles = function (hook_name, args, cb) {
 	  args.content = args.content + eejs.require("ep_heatmap/templates/styles.ejs", {}, module);
 	  return cb();
 }
+
+/*function createChangeset(cs) {
+	console.log(Changeset.unpack(cs));
+}
+*/

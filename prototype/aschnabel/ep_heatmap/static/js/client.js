@@ -7,11 +7,12 @@
 
 // Toggle Heatmap Status
 var heatmap_status = false;
+
 function changeHeatMapStatus() {
 
   heatmap_status = !heatmap_status;
   console.log("heatmap_status => "+(heatmap_status?"true":"false"));
-  
+
   if (heatmap_status) {
     //console.log("enableHeatMapSidebar()");
     createNumericModel();
@@ -20,7 +21,7 @@ function changeHeatMapStatus() {
   else {
     console.log("disableHeatMapSidebar()");
   }
-  
+
 }
 
 
