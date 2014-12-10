@@ -4,7 +4,7 @@
  *
  */
 
-var debug = false, initHM = true, initDelay=0, lineNumber=-1, initChangeset = new Array();
+var debug = true, initHM = true, initDelay=0, lineNumber=-1, initChangeset = new Array();
 var ep_activity = new Array();
 
 
@@ -18,9 +18,11 @@ exports.aceEditEvent = function(hook_name, args, cb) {
   else if ((args.callstack.docTextChanged == true || args.callstack.type == "applyChangesToBase")) {
 
       var changedLine = findChangedLine(args.rep.alines);
-      ep_activity[changedLine][0] = args.rep.alines[changedLine]; // save new changeset
-      ep_activity[changedLine][1]++; // increment activity
-      console.table(ep_activity);
+      if (changedLine) {
+        ep_activity[changedLine][0] = args.rep.alines[changedLine]; // save new changeset
+        ep_activity[changedLine][1]++; // increment activity
+        if (debug) console.table(ep_activity);
+      }
 
       //console.log("aceEditEvent-rep-OBJECT: "+JSON.stringify(args.rep))
       //console.log("aceEditEvent-documentAttributeManager-OBJECT: "+JSON.stringify(args.documentAttributeManager ))
@@ -46,17 +48,44 @@ function findChangedLine(newChangesets) {
   console.log(newChangesets); // new changeset before changes
 
   for(var i=0; i<newChangesets.length; i++) {
-    if (newChangesets[i] !== ep_activity[i][0]) {
 
-      // debugging / logging
-      console.log("Changeline ("+i+"): "+ep_activity[i][0]+" --> "+newChangesets[i]);
-      if (ep_activity[i-1] != undefined && newChangesets[i-1] != undefined) console.log("(preLine) "+ep_activity[i-1][0]+" --> "+newChangesets[i-1]);
-      if (ep_activity[i+1] != undefined && newChangesets[i+1] != undefined) console.log("(nextLine) "+ep_activity[i+1][0]+" --> "+newChangesets[i+1]);
+    // regular expression for empty line:  [*x]? |1+1
+    var emptyLine = /^(?:\*[0-9a-z]+)?\|1\+1$/;
 
-      // notice ENTER & RETURN [  +- [*x]? |1+1 ]
-      var re0 = /^(?:\*[0-9a-z]+)?\|1\+1$/;
-      if (re0.test(newChangesets[i])) { addedLine(i, newChangesets[i]); console.log("found: "+re0.exec(newChangesets[i])); } // ENTER button
-      else if (re0.test(ep_activity[i][0])) droppedLine(i); // RETURN button
+    // exception on deleting last (empty) line before filled one (etherpad instantly creates a new one)
+    if ( newChangesets[i+1]==undefined && !emptyLine.test(ep_activity[i-1][0]) && !emptyLine.test(newChangesets[i]) ) {
+      if (debug) console.log("DELETELAST-exception ("+i+")");
+      return false;
+    }
+
+    // ChSet-difference found
+    else if (newChangesets[i] !== ep_activity[i][0]) {
+      console.log("Changeline: "+i);
+
+      // ENTER
+      if (emptyLine.test(newChangesets[i]) && newChangesets[i+1] != undefined && ep_activity[i][0]==newChangesets[i+1]) {
+        addedLine(i, newChangesets[i]);
+        if (debug) console.log("ENTER");
+      }
+      //if (debug) console.log("ENTER - emptyLine: "+emptyLine.exec(newChangesets[i]));
+      //if (debug) console.log("ENTER - next emtpy: "+(newChangesets[i+1]!=undefined?"false":"true"));
+      //if (debug) console.log("ENTER - ("+ep_activity[i][0]+") oldChSet -> new_next ("+newChangesets[i+1]+")");
+      
+      // ENTER-wired Etherpad: prelast filled:ENTER [last always emtpy] -> changeset change in prelast?!
+      if ( ep_activity[i+2]==undefined && newChangesets[i+2]!=undefined ) addedLine(i, newChangesets[i]);
+
+      // RETURN
+      if ( emptyLine.test(ep_activity[i][0]) && (ep_activity[i+1]==undefined || (ep_activity[i+1]!=undefined && ep_activity[i+1][0]==newChangesets[i]) )  ) {
+        droppedLine(i); if (debug) console.log("RETURN");
+      }
+      //if (debug && ep_activity[i][0]!=undefined) console.log("RETURN - emptyLine: "+emptyLine.exec(ep_activity[i][0]));
+      //if (debug) console.log("RETURN - 1) last line: "+(ep_activity[i+1]==undefined?"true":"false")+"           or ...");
+      //if (debug && ep_activity[i+1]!=undefined) console.log("RETURN - 2) ("+ep_activity[i+1][0]+") old_next -> thisChSet ("+newChangesets[i]+") : "+(ep_activity[i+1][0]==newChangesets[i]?"true":"false")+"            && (notlast) "+(ep_activity[i+1]!=undefined?"true":"false"));
+
+      // RETURN-MERGE: two filled lines, 2nd line RETURN @ beginning      [note: to be sure add: old+1_count + old_count == new.count [beim count muss jedoch überall auf hinten |1+1 umgerechnet werden -.-]]
+      if (ep_activity[i+2]!=undefined && ep_activity[i+1]!=undefined)
+        if (ep_activity[i+2][0] == newChangesets[i+1])
+          { droppedLine(i); if (debug) console.log("RETURN-MERGE"); }
 
       return i;
     }
@@ -86,6 +115,7 @@ function createLineArray(line) {
 // Gets called when "pre-init" is done
 exports.postAceInit = function(hook_name, args, cb) {
   console.log("postAceInit-event");
+  console.log(initChangeset); // changeset used for init
   initDelay = lineNumber;
 
   // Init process: fill ep_activity
