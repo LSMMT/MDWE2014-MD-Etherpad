@@ -43,15 +43,21 @@ exports.aceEditEvent = function(hook_name, args, cb) {
 
 // Helper function to find the changed value between two arrays
 function findChangedLine(newChangesets) {
-  console.table(newChangesets); // new changeset before changes
+  console.log(newChangesets); // new changeset before changes
   for(var i=0; i<newChangesets.length; i++) {
+    // Exception when ep_activity[i] doesnt exist yet (last line)
+    if (ep_activity[i] == undefined) { console.log("not found"); createLineArrayCS(i, "|1+1"); }
+
     if (newChangesets[i] !== ep_activity[i][0]) {
+      // debugging / logging
       console.log("Changeline ("+i+"): "+ep_activity[i][0]+" --> "+newChangesets[i]);
       if (ep_activity[i-1] != undefined && newChangesets[i-1] != undefined) console.log("(preLine) "+ep_activity[i-1][0]+" --> "+newChangesets[i-1]);
       if (ep_activity[i+1] != undefined && newChangesets[i+1] != undefined) console.log("(nextLine) "+ep_activity[i+1][0]+" --> "+newChangesets[i+1]);
 
-      if (newChangesets[i] === "*1|1+1") addedLine(i, "*1|1+1"); // ENTER button  || newChangesets[i+1] === "|1+1"
-      else if (ep_activity[i][0] === "*1|1+1" || ep_activity[i][0] === "|1+1") droppedLine(i); // RETURN button
+      // notice ENTER & RETURN [  +- [*x]? |1+1 ]
+      var re0 = /^(?:\*[0-9a-z]+)?\|1\+1$/;
+      if (re0.test(newChangesets[i])) { addedLine(i, newChangesets[i]); console.log("found: "+re0.exec(newChangesets[i])); } // ENTER button
+      else if (re0.test(ep_activity[i][0])) droppedLine(i); // RETURN button
 
       return i;
     }
@@ -95,17 +101,11 @@ function createLineArray(line) {
   var lineArray = new Array(initChangeset[line], 0); // lineArray[changeset, activity]
   ep_activity.push(lineArray);
 };
-/* <-- ohne einzelne Buchstaben zu betrachten
-function pushStringToArray(content, line) {
-  var lineArray = content.split(''); // split to single chars
-  lineArray.unshift(line); // lineArray[lineNumber, char0, char1, char2, ...]
-  ep_content.push(lineArray);
-};*/
 
 
 // Gets called when init process can start
 exports.postAceInit = function(hook_name, args, cb) {
-  initDelay--;
+  //initDelay--;
   console.log("postAceInit-event");
   console.log("start Init - initDelay("+initDelay+")");
   initHM = true;
