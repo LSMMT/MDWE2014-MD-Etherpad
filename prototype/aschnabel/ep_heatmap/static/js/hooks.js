@@ -71,14 +71,19 @@ exports.postAceInit = function(hook_name, args, cb) {
 // Gets called every second
 exports.aceEditEvent = function(hook_name, args, cb) {
 
-  // Decay of activity
-  for(var i=0; i<ep_activity.length; i++) {
-    if (ep_activity[i][1]>0) {
-      var temp_debug = ep_activity[i][1];
-      ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
-      //console.log("decay: "+temp_debug+" --> "+ep_activity[i][1]);
+    // Decay of activity
+    // check if the event is the idleWorkTimer,
+    // so we only change the ep_activity table once per second
+    
+    if (args.callstack.type === "idleWorkTimer") { 
+        for(var i=0; i<ep_activity.length; i++) {
+            if (ep_activity[i][1]>0) {
+                var temp_debug = ep_activity[i][1];
+                ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
+                //console.log("decay: "+temp_debug+" --> "+ep_activity[i][1]);
+            }
+        }      
     }
-  }
 
   return cb();
 }
