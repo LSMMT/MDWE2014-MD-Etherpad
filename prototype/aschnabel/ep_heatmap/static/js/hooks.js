@@ -4,7 +4,7 @@
  *
  */
 
-var debug = true, initHM = true, initDelay=0, lineNumber=-1, initChangeset = new Array();
+var debug = true, initHM = true, initDelay=0, lineNumber=-1, initChangeset = new Array(), initDivId = new Array();
 var ep_activity = new Array();
 
 
@@ -12,46 +12,49 @@ var ep_activity = new Array();
 exports.aceEditEvent = function(hook_name, args, cb) {
 
   // Pre-init process: save changeset for init process
-  if (initHM) initChangeset = args.rep.alines;
+  /*if (initHM) {
+    initChangeset = args.rep.alines;
+  }*/
 
   // Trace Changes after init process
-  else if ((args.callstack.docTextChanged == true || args.callstack.type == "applyChangesToBase")) {
-
-      var changedLine = findChangedLine(args.rep.alines);
+  //else if ((args.callstack.docTextChanged == true || args.callstack.type == "applyChangesToBase")) {
+/*
+      var changedLine = findChangedLine(args.rep.alines, args.rep.node.id);
       if (changedLine) {
         ep_activity[changedLine][0] = args.rep.alines[changedLine]; // save new changeset
         ep_activity[changedLine][1]++; // increment activity
         if (debug) console.table(ep_activity);
-      }
+      }*/
 
       //console.log("aceEditEvent-rep-OBJECT: "+JSON.stringify(args.rep))
       //console.log("aceEditEvent-documentAttributeManager-OBJECT: "+JSON.stringify(args.documentAttributeManager ))
       //console.log("aceEditEvent-callstack -OBJECT: "+JSON.stringify(args.callstack  ))
       //ERROR:createChangeset(args.rep.alines[changedLine]);
-  }
+  //}
 
   // Decay of activity
-  for(var i=0; i<ep_activity.length; i++) {
+  /*for(var i=0; i<ep_activity.length; i++) {
     if (ep_activity[i][1]>0) {
       var temp_debug = ep_activity[i][1];
       ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
       //console.log("decay: "+temp_debug+" --> "+ep_activity[i][1]);
     }
-  }
+  }*/
 
   return cb();
 }
 
 
 // Helper function to find the changed value between two arrays
-function findChangedLine(newChangesets) {
-  console.log(newChangesets); // new changeset before changes
+function findChangedLine(newChangesets, newDivIds) {
+  //for(var i=0; i<newDivIds.length; i++) newDivIds[i] = newDivIds[i].substring(10);
+  console.log(newDivIds); // new changeset before changes
 
-  for(var i=0; i<newChangesets.length; i++) {
+  for(var i=0; i<newDivIds.length; i++) {
 
     // regular expression for empty line:  [*x]? |1+1
-    var emptyLine = /^(?:\*[0-9a-z]+)?\|1\+1$/;
-
+    //var emptyLine = /^(?:\*[0-9a-z]+)?\|1\+1$/;
+/*
     // exception on deleting last (empty) line before filled one (etherpad instantly creates a new one)
     if ( newChangesets[i+1]==undefined && !emptyLine.test(ep_activity[i-1][0]) && !emptyLine.test(newChangesets[i]) ) {
       if (debug) console.log("DELETELAST-exception ("+i+")");
@@ -88,14 +91,14 @@ function findChangedLine(newChangesets) {
           { droppedLine(i); if (debug) console.log("RETURN-MERGE"); }
 
       return i;
-    }
+    }*/
   }
 }
 
 
 // Helper function: new line added (ENTER) -> update ep_activity
-function addedLine(position, chset) {
-  ep_activity.splice(position, 0, new Array(chset, 0)); // splice(index, count_to_remove, addelement1, addelement2, ...)
+function addedLine(position, chset, divid) {
+  ep_activity.splice(position, 0, new Array(chset, 0, divid)); // splice(index, count_to_remove, addelement1, addelement2, ...)
 }
 
 
@@ -107,7 +110,7 @@ function droppedLine(position) {
 
 // Helper function for init array process
 function createLineArray(line) {
-  var lineArray = new Array(initChangeset[line], 0); // lineArray[changeset, activity]
+  var lineArray = new Array(null, 0, line); // lineArray[changeset, activity, divid]
   ep_activity.push(lineArray);
 }
 
@@ -115,11 +118,11 @@ function createLineArray(line) {
 // Gets called when "pre-init" is done
 exports.postAceInit = function(hook_name, args, cb) {
   console.log("postAceInit-event");
-  console.log(initChangeset); // changeset used for init
+  console.log(initDivId); // changeset used for init
   initDelay = lineNumber;
 
   // Init process: fill ep_activity
-  for (var i=0; i<initChangeset.length; i++) createLineArray(i);
+  //for (var i=0; i<initChangeset.length; i++) createLineArray(i);
   console.log("Init done: ep_activity now:\n"); console.table(ep_activity);
 
   initHM=false;
@@ -129,16 +132,25 @@ exports.postAceInit = function(hook_name, args, cb) {
 
 // Gets called when DOM line is written -> pre init process
 exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
-  var lineContent = args.node.children[0].innerText,
-      lineId = args.node.id.substring(10);
+  var lineContent = args.node.children[0].innerText, lineId = args.node.id.substring(10);
 
-  // While init: pre init process
+  // Pre init process
   if (initHM) {
     lineNumber++;
-    //if (debug) console.log("init lineId ("+lineId+") lineNumber("+lineNumber+") lineContent("+(lineContent=="\n"?"\\n":lineContent)+")");
+    if (debug) console.log("init lineId ("+lineId+") lineNumber("+lineNumber+") lineContent("+(lineContent=="\n"?"\\n":lineContent)+")");
+    
+    createLineArray(lineId);
   }
 
-  // Count initDelay
+  // Pre init process
   else if (initDelay>0) initDelay--;
+  else {
+    
+    // Track changes after init process
+    if (ep_activity[i-1]!=undefined && ep_activity[i+1]!=undefined) console.log("change: "+lineId+"          preline: "+ep_activity[i-1][2]+"     nextline:"+ep_activity[i+1][2]);
+    console.log("prevSibling: "+args.node.previousSibling.id);
+    // ENTER
+    //if (ep_activity[i-1][2]==args.node.previousSibling.id)
+  }
   return cb();
 }
