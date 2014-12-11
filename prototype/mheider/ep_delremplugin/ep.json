@@ -1,0 +1,11 @@
+{
+    "parts": [
+        {
+            "name":"delremplugin",
+            "client_hooks": {
+                "acePostWriteDomLineHTML":"ep_delremplugin/static/js/hooks",
+                "postAceInit":"ep_delremplugin/static/js/hooks"
+            }
+        }
+    ]
+}
