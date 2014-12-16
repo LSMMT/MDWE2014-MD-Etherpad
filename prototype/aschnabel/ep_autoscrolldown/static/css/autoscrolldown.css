@@ -1,0 +1,21 @@
+#autoscrolldown_span {
+	background-image:none;
+	background: -moz-linear-gradient(0% 100% 90deg, #gray, #lightgray);
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#888), to(#eee));
+}
+
+#buttonicon-autoscrolldown {
+	font-size: 14px;
+	color: #333 !important;
+	height: 28px;
+	width: 60px;
+	border-radius: 3px;
+	background-image:none;
+	/*background: url(/static/plugins/ep_autoscrolldown/static/html/editbar_disabled.png)!important);*/ /*créer image*/
+}
+
+#autoscrolldown_checkbox {
+	box-shadow: 3px 3px 3px #888;
+	-webkit-box-shadow: 3px 3px 3px #888;
+	-moz-box-shadow: 3px 3px 3px #888;
+}

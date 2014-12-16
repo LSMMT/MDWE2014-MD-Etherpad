@@ -4,9 +4,39 @@
  *
  */
 
-//var Changeset = require("ep_etherpad-lite/static/js/Changeset");
-//var settings = require('ep_etherpad-lite/node/utils/Settings');
 var eejs = require('ep_etherpad-lite/node/eejs');
+
+
+// trying to find hook for: URLPATH -> AUTHORISATION(client-id, padId)
+exports.padLoad = function(hook_name, args, cb) {
+  
+  console.log("hello padLoad!");
+  return cb();
+}
+
+
+// trying to find hook for: URLPATH -> AUTHORISATION(client-id, padId)
+exports.handleMessage = function(hook_name, args, cb) {
+  
+  console.log("hello handleMessage!");
+  return cb();
+}
+
+
+// trying to find hook for: URLPATH -> AUTHORISATION(client-id, padId)
+exports.authorize = function(hook_name, args, cb) {
+  
+  console.log("hello authorize!");
+  return cb();
+}
+
+
+// trying to find hook for: URLPATH -> AUTHORISATION(client-id, padId)
+exports.authenticate = function(hook_name, args, cb) {
+  
+  console.log("hello authenticate!");
+  return cb();
+}
 
 
 // Client js
@@ -31,8 +61,3 @@ exports.eejsBlock_styles = function (hook_name, args, cb) {
 	  args.content = args.content + eejs.require("ep_heatmap/templates/styles.ejs", {}, module);
 	  return cb();
 }
-
-/*function createChangeset(cs) {
-	console.log(Changeset.unpack(cs));
-}
-*/
