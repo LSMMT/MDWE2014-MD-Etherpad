@@ -1,0 +1,24 @@
+
+{
+    "name":"ep_heatmap",
+    "version":"0.0.1",
+    "keywords":"heatmap, beamer mode, autoscroll, multidevice, mobile device, etherpad-lite plugin",
+    "description":"Show a heatmap",
+
+    "contributors": [{
+        "name":"Sophia",
+        "email":"sophia@sumisi.de"
+    }],
+
+    "repository": {
+        "type":"git",
+        "url":"https://github.com/hb0/etherpad-lite"
+    },
+
+    "dependencies":{},
+    "engines": {
+        "node":"*"
+    },
+
+   "license": "MIT"
+}
