@@ -1,0 +1,44 @@
+{
+  "name": "ep_autoscrolldown",
+  "version": "0.0.6",
+  "keywords": [
+    "scrolling",
+    "automatic",
+    "etherpad",
+    "etherpad-lite"
+  ],
+  "description": "Add a checkbox to auto-scroll down the pad when content is modified in Etherpad-Lite.\n\nThis module is part of an academic project for courses accessibility from Paris 8 University.",
+  "author": {
+    "name": "Benoit Lathiere",
+    "email": "benoit.lathiere@gmail.com"
+  },
+  "engines": {
+    "node": "*"
+  },
+  "bugs": {
+    "email": "benoit.lathiere@gmail.com"
+  },
+  "license": "MIT",
+  "readme": "# ep_autoscrolldown\n\nAdd a checkbox to auto scroll down the pad when content is modified. No setting required. Both read-write and read-only modes.\n\n## About\nThis module is part of an academic project for courses accessibility from Paris 8 University (France).\n\nI use already loaded JQuery library and EPL hooks.\n\n## To do\n- Improve button style...\n- Adding some optional settings like \"restrict function to a mode : read-write|read-only\".\n\n## Bugs\nAfter You uncheck the option, some browsers need several click/scroll in the pad to deactive autoscroll ! I don't know why for now...\n\nSend me an email if You found a bug, and please specify your browser version (You can use www.html5test.com to retrieve the correct browser name/version).\n\n",
+  "readmeFilename": "readme.md",
+  "_id": "ep_autoscrolldown@0.0.6",
+  "dist": {
+    "shasum": "0276aa4696f2650c1f546c885ccd888e35f8d832",
+    "tarball": "http://registry.npmjs.org/ep_autoscrolldown/-/ep_autoscrolldown-0.0.6.tgz"
+  },
+  "_from": "ep_autoscrolldown@",
+  "_npmVersion": "1.3.2",
+  "_npmUser": {
+    "name": "benoit.lathiere",
+    "email": "benoit.lathiere@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "benoit.lathiere",
+      "email": "benoit.lathiere@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_shasum": "0276aa4696f2650c1f546c885ccd888e35f8d832",
+  "_resolved": "https://registry.npmjs.org/ep_autoscrolldown/-/ep_autoscrolldown-0.0.6.tgz"
+}

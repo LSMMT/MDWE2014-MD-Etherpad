@@ -1,0 +1,15 @@
+{
+  "parts" : [
+    {
+      "name":"autoscrolldown",
+    	"hooks":{
+    	  "eejsBlock_editbarMenuLeft":"ep_autoscrolldown/hooks",
+    	  "eejsBlock_scripts":"ep_autoscrolldown/hooks",
+    	  "eejsBlock_styles":"ep_autoscrolldown/hooks"
+      },
+      "client_hooks":{
+    	  "acePostWriteDomLineHTML":"ep_autoscrolldown/static/js/hooks"
+      }
+    }
+  ]
+}
