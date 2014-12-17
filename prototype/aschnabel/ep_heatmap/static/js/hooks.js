@@ -4,7 +4,7 @@
  *
  */
 
-var debug = true, initHM = true, initDelay=0, lineNumber=-1, initDivId = new Array();
+var debug = true, initHM = true, initDelay=0, lineNumber=-1;
 var ep_activity = new Array();
 
 
@@ -23,7 +23,7 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
     initDelay--;// 
     createLineArray(lineId);
     if (debug) console.log("init lineId ("+lineId+") lineNumber("+lineNumber+")");
-    if (initDelay===0) { console.log("Init done: ep_activity now:\n"); console.table(ep_activity); }
+    if (initDelay===0) { console.log("Init done: ep_activity=\n"); console.table(ep_activity); }
   }
   
 
@@ -31,20 +31,20 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
   else {
     console.log("changed: lineId("+lineId+")");
 
-    // magic here
+    // update array and increment activity here
 
   }
   return cb();
 }
 
 
-// Helper function: new line added (ENTER) -> update ep_activity
+// Helper function: new line added -> update ep_activity
 function addedLine(position, divid) {
   ep_activity.splice(position, 0, new Array(divid, 0));
 }
 
 
-// Helper function: line dropped (RETURN) -> update ep_activity
+// Helper function: line dropped -> update ep_activity
 function droppedLine(position) {
   ep_activity.splice(position, 1); // splice(index, count_to_remove, addelement1, addelement2, ...)
 }
@@ -71,19 +71,18 @@ exports.postAceInit = function(hook_name, args, cb) {
 // Gets called every second
 exports.aceEditEvent = function(hook_name, args, cb) {
 
-    // Decay of activity
-    // check if the event is the idleWorkTimer,
-    // so we only change the ep_activity table once per second
-    
-    if (args.callstack.type === "idleWorkTimer") { 
-        for(var i=0; i<ep_activity.length; i++) {
-            if (ep_activity[i][1]>0) {
-                var temp_debug = ep_activity[i][1];
-                ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
-                //console.log("decay: "+temp_debug+" --> "+ep_activity[i][1]);
-            }
-        }      
-    }
+  // Decay of activity
+  // check if the event is the idleWorkTimer,
+  // so we only change the ep_activity table once per second
+  
+  if (args.callstack.type === "idleWorkTimer") {
+      for(var i=0; i<ep_activity.length; i++) {
+          if (ep_activity[i][1]>0) {
+              var temp_debug = ep_activity[i][1];
+              ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
+          }
+      }      
+  }
 
   return cb();
 }

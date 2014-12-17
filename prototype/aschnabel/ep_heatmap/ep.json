@@ -5,8 +5,7 @@
             "hooks": {
                 "eejsBlock_editbarMenuLeft":"ep_heatmap/hooks",
                 "eejsBlock_scripts":"ep_heatmap/hooks",
-                "eejsBlock_styles":"ep_heatmap/hooks",
-                "handleMessage":"ep_heatmap/hooks"
+                "eejsBlock_styles":"ep_heatmap/hooks"
             },
             "client_hooks": {
                 "acePostWriteDomLineHTML":"ep_heatmap/static/js/hooks",
