@@ -1,34 +1,50 @@
-// Maybe this functionality should be done.. better
-var myFrame;// myFrame points now to the content of the editor
+/**
+ * hooks.js
+ * Contains the client hook of the ep_delremplugin etherpad-lite plugin
+ *
+ * @author Markus Heider <markus.heider@tu-dresden.de>
+ */
 
-// 2D Array
-/*
-     |oldId|ep_activity|
-
- * TODO
- *   - 
+ 
+/**
+ * 2D Array containing abstraction of the DOM-Lines
+ * (a DOM-Line contains the last magicdomid of the line and the ep_activity value)
+ * 
+ * @property olddivs
+ * @type {Array}
  */
 var olddivs;
-var initialized = false;
+
+/**
+ * flag to remember if the plugin has been initialized yet
+ * @property initialized
+ * @type {Boolean}
+ * @default false
+ */
+ var initialized = false;
 
 
+
+/**
+ * This function returns an array containing every div object of the pad-document
+ *
+ * @return {Array} the div objects
+ */
 function getDivArray() {
-
-
     return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
-
 }
 
 /*
  *
  */
 function initializeLineArray() {
-    
-    getIdsOfDivs();
+    if (initialized != true) {
+        olddivs = new Array();
+        getIdsOfDivs();
+    }
 };
 
 function getIdsOfDivs() {
-    console.log("getIdsOfDivs - myFrame: "  +  myFrame);
     var divArr = getDivArray();
 
     // initilization
@@ -42,25 +58,49 @@ function getIdsOfDivs() {
     initialized = true;
 };
 
+/**
+ * reduces the given magicdomid {String} (exp.: magicdomid42)
+ * and returns only the number of the id
+ *
+ * @param {String} magicdomid
+ *
+ * @return {Int} id as String
+ */
 function reduceMagicDomId(magicdomid) {
-    return magicdomid.replace("magicdomid", "");
+    var tmpStr = magicdomid.replace("magicdomid", "");
+
+    return parseInt(tmpStr);
 };
 
 
+/**
+ * postAceInit Hook
+ * called after the AceEditor has been initialized
+ *
+ * @param {String} hook_name the name of the hook
+ * @param {Object} args context of the hook - for more information: http://etherpad.org/doc/v1.4.1/
+ * @param {Function} cb the callback
+ *
+ * @return {Function} return of the cb
+ */
 exports.postAceInit = function(hook_name, args, cb) {
     /*
      * initialize everything 
      */
-    olddivs = new Array();
-
     initializeLineArray();
-    
     return cb();
 };
 
 
-/*
- * TODO: Documentation
+/**
+ * acePostWriteDomLineHTML Hook
+ * called after the DOM of the ace editor has been changed
+
+ * @param {String} hook_name the name of the hook
+ * @param {Object} args context of the hook - for more information: http://etherpad.org/doc/v1.4.1/
+ * @param {Function} cb the callback
+ *
+ * @return {Function} return of the cb
  */
 exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
 
