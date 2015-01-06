@@ -4,7 +4,8 @@
  *
  */
 
-var debug = true;
+var debug = false;
+var activity = require('./activity');
 
 
 /**
@@ -79,6 +80,28 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
 };
 
 
+/**
+ * aceEditEvent hook
+ * called every second and after the dom of the ace editor has been changed
+ *
+ * @param {string} hook_name the name of the hook
+ * @param {object} args context of the hook - for more information: http://etherpad.org/doc/v1.4.1/
+ * @param {function} cb the callback
+ *
+ * @return {function} return of the cb
+ */
+exports.aceEditEvent = function(hook_name, args, cb) {
+
+  // Decay of activity
+  // check if the event is the idleWorkTimer,
+  // so we only change the ep_activity table once per second
+  
+  if (args.callstack.type === "idleWorkTimer")
+    activity.decay();
+
+  return cb();
+}
+
 
 /**
  * This function returns an array containing every div object of the pad-document
@@ -86,8 +109,9 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
  * @return {Array} the div objects
  */
 function getDivArray() {
-    return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
-}
+  return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
+};
+
 
 /**
  * reduces the given magicdomid {String} (exp.: magicdomid42)
@@ -102,6 +126,3 @@ function reduceMagicDomId(magicdomid) {
 
     return parseInt(tmpStr);
 };
-
-
-
