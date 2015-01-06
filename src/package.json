@@ -1,14 +1,9 @@
 
 {
     "name":"ep_heatmap",
-    "version":"0.0.1",
-    "keywords":"heatmap, beamer mode, autoscroll, multidevice, mobile device, etherpad-lite plugin",
-    "description":"Show a heatmap",
-
-    "contributors": [{
-        "name":"Sophia",
-        "email":"sophia@sumisi.de"
-    }],
+    "version":"0.1.0",
+    "keywords":"heatmap, viewport, autoscroll, beamer mode, etherpad-lite plugin",
+    "description":"Adds a heatmap for recent activities with viewport and autoscroll",
 
     "repository": {
         "type":"git",
