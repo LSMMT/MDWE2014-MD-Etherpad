@@ -74,7 +74,7 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
      */
     /*
     var divArr = getDivArray();
-    
+
 
     if (divArr.length < olddivs) {
         var diffLength = olddivs.length - divArr.length;
@@ -123,7 +123,7 @@ exports.aceEditEvent = function(hook_name, args, cb) {
   // Decay of activity
   // check if the event is the idleWorkTimer,
   // so we only change the ep_activity table once per second
-  
+
   if (args.callstack.type === "idleWorkTimer")
     activity.decay();
 

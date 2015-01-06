@@ -1,6 +1,17 @@
-<li data-type="button" data-key="heatmap">
-    <a class="grouped-middle" data-l10n-id="heatmap" title="Heatmap">
-      Flame
-      <!--span class="buttonicon buttonicon-history"></span-->
+<div id="heatmapIcon" data-type="button" data-key="heatmap">
+    <a onClick="showHeatMap()" class="grouped-middle" data-l10n-id="heatmap" title="Heatmap">
+        <span class="buttonicon buttonicon-history"></span>
     </a>
-</li>
+</div>
+
+<div id="heatmapBox">
+    <div id="heatmapTitle"><span id="titlelabel" data-l10n-id="heatmap">Heatmap</span></div>
+    <div id="heatmapContent" class="authorColors">
+        <div alt="loading.." id="chatloadmessagesball" class="chatloadmessages loadingAnimation" align="top"></div>
+        <button id="chatloadmessagesbutton" class="chatloadmessages" data-l10n-id="pad.chat.loadmessages" style="display: none;">Weitere Nachrichten laden</button>
+    </div>
+    <div id="heatmapFooter">
+        <a id="" onclick="" title="AutoScroll">AutoScroll</a>
+      	<a id="" onclick="" title="Clone to other device">Clone to Device</a>
+    </div>
+</div>

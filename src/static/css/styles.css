@@ -1,0 +1,80 @@
+.heatmap,
+.miniregion {
+	display: none !important;
+}
+
+.heatmap.active,
+.miniregion.active {
+	display: block !important;
+}
+
+#editorcontainer {
+	width: 70%;
+}
+
+#heatmapIcon {
+	z-index: 400;
+	position: fixed;
+	bottom: 0;
+	right: 110px;
+	padding: 5px;
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;
+	border-top: 1px solid #999;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	background-color: #fff;
+	cursor: pointer;
+}
+
+#heatmapBox {
+	position: absolute;
+	bottom: 30px;
+	right: 0;
+	width: 225px;
+	height: 85%;
+	z-index: 401;
+	background-color: #f7f7f7;
+	padding: 3px 3px 10px;
+	display: none;
+}
+
+#heatmapTitle {
+	line-height: 16px;
+	font-weight: 700;
+	color: #555;
+	position: relative;
+	bottom: 2px;
+}
+
+#heatmapContent {
+	background-color: #fff;
+	border: 1px solid #fff;
+	-ms-overflow-y: scroll;
+	overflow-y: scroll;
+	font-size: 12px;
+	position: absolute;
+	right: 0;
+	left: 0;
+	top: 25px;
+	bottom: 25px;
+	z-index: 1002;
+}
+
+#heatmapFooter {
+	padding: 3px 2px;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	left: 3px;
+}
+
+#heatmapBox.active {
+	display: block;
+}
+
+#chaticon, #chatbox {
+	display: none !important;
+}
+
+.minimap{z-index:10000;position:fixed;cursor:pointer;font-size:1em}.miniregion{z-index:10001;position:fixed;background:0 0;border:2px solid silver;border-radius:10%;cursor:pointer}.miniregion:hover{box-shadow:0 0 .4em darkgrey}.noselect{-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
