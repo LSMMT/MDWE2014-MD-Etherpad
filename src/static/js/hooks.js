@@ -4,26 +4,17 @@
  *
  */
 
-var debug = false;
+var debug = true;
 var activity = require('./activity');
 
- 
-/**
- * 2D Array containing abstraction of the DOM-Lines
- * (a DOM-Line contains the last magicdomid of the line and the ep_activity value)
- * 
- * @property olddivs
- * @type {Array}
- */
-var olddivs;
 
 /**
- * flag to remember if the plugin has been initialized yet
+ * variables used for init process only
  * @property initialized
  * @type {Boolean}
  * @default false
  */
- var initialized = false;
+ var initialized = false, initDelay=0, initlineNumber=-1;
 
 
 /**
@@ -37,7 +28,15 @@ var olddivs;
  * @return {Function} return of the cb
  */
 exports.postAceInit = function(hook_name, args, cb) {
-  //TODO: initializeLineArray();
+
+  /**
+   * Init process
+   */
+  if (debug) console.log("postAceInit-event");
+  if (debug) console.log("delay: "+initlineNumber); // changeset used for init
+  initDelay = initlineNumber;
+  initlineNumber = -1;
+  initialized=true;
   return cb();
 };
 
@@ -54,7 +53,18 @@ exports.postAceInit = function(hook_name, args, cb) {
  */
 exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
 
-    //TODO: init process
+    /**
+     * Init process
+     */
+    var lineDivId = args.node.id.substring(10);
+    if (!initialized) initlineNumber++;// Pre init process
+    else if (initDelay>0) {
+      initlineNumber++;
+      initDelay--;
+      activity.addline(initlineNumber+1, lineDivId);
+      if (debug) console.log("init lineDivId ("+lineDivId+") initlineNumber("+initlineNumber+")");
+      if (initDelay===0) { console.log("Init done: ep_activity=\n"); console.table(activity.getall()); }
+    }
 
 
     /*

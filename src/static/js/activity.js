@@ -6,6 +6,7 @@
 
 var activity = function() {
 
+  var debug = true;
 
   /**
    * This array contains all text-lines of the pad with their current activity
@@ -58,7 +59,7 @@ var activity = function() {
     amount = (typeof amount === "undefined") ? 1 : amount;
 
     for (var i=0; i<amount; i++)
-      ep_activity.splice(after_line-1+i, 0, new Array(first_divid+i, 0));
+      ep_activity.splice(after_line-1+i, 0, new Array(parseInt(first_divid)+i, 0));
 
     changeEvent(after_line+1, amount); // added line = after_line+1
   };
