@@ -7,6 +7,24 @@
 var debug = false;
 var activity = require('./activity');
 
+ 
+/**
+ * 2D Array containing abstraction of the DOM-Lines
+ * (a DOM-Line contains the last magicdomid of the line and the ep_activity value)
+ * 
+ * @property olddivs
+ * @type {Array}
+ */
+var olddivs;
+
+/**
+ * flag to remember if the plugin has been initialized yet
+ * @property initialized
+ * @type {Boolean}
+ * @default false
+ */
+ var initialized = false;
+
 
 /**
  * postAceInit Hook
@@ -19,7 +37,7 @@ var activity = require('./activity');
  * @return {Function} return of the cb
  */
 exports.postAceInit = function(hook_name, args, cb) {
-  initializeLineArray();
+  //TODO: initializeLineArray();
   return cb();
 };
 

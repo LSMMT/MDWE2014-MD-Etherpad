@@ -125,11 +125,13 @@ var activity = function() {
 
 
   return {
-    increment   : _increment,
-    addline     : _addline,
-    removeline  : _removeline,
-    decay       : _decay,
-    getall      : _getall
+    increment : _increment,
+    addline : _addline,
+    removeline : _removeline,
+    decay : _decay,
+    getall : _getall
   };
   
 }();
+
+module.exports = activity;
