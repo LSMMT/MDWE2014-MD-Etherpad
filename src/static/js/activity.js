@@ -1,5 +1,5 @@
 /**
- * This "class" manages the activity information of all text-lines of the pad
+ * This class manages the activity information of all text-lines of the pad
  *
  * @class activity
  */
@@ -27,9 +27,7 @@ var activity = function() {
    * @property settings
    * @type {Object}
    */
-  var settings = {
-    default_increase_amount: 1    // default amount for increasing activity
-  };
+  var default_increase_amount = 1;    // default amount for increasing activity
 
 
   /**
@@ -61,7 +59,7 @@ var activity = function() {
     for (var i=0; i<amount; i++)
       ep_activity.splice(after_line-1+i, 0, new Array(parseInt(first_divid)+i, 0));
 
-    changeEvent(after_line+1, amount); // added line = after_line+1
+    changeEvent(after_line, amount); // added position = (after_line-1)+1
   };
 
 
@@ -77,7 +75,7 @@ var activity = function() {
 
     ep_activity.splice(start_line-1, amount);
 
-    changeEvent(start_line-1, 2); // handle remove as activity in previous & next line
+    changeEvent(start_line-2, 2); // handle remove as activity in previous (-1 -> -2) & next line
   };
 
 
@@ -94,8 +92,12 @@ var activity = function() {
 
     if (debug) console.log("->activity.changeEvent("+start_line+", "+amount+")");
     //TODO: update minimap
-    //TODO: update heatmap
     //TODO: decide/do autoscroll
+    //TODO: update heatmap
+    /**
+    * heatmap.update(activity.getall()); // scope problem
+    * if no other solution: instead of passive changeEvent() active _changeEvent(ep_activity) from outside
+    */
   };
 
 

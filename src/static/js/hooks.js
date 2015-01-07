@@ -6,6 +6,7 @@
 
 var debug = true;
 var activity = require('./activity');
+var heatmap = require('./heatmap');
 
 
 /**
@@ -62,8 +63,13 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
       initlineNumber++;
       initDelay--;
       activity.addline(initlineNumber+1, lineDivId);
-      if (debug) console.log("init lineDivId ("+lineDivId+") initlineNumber("+initlineNumber+")");
-      if (initDelay===0) { console.log("Init done: ep_activity=\n"); console.table(activity.getall()); }
+      //console.log("init lineDivId ("+lineDivId+") initlineNumber("+initlineNumber+")");
+      if (initDelay===0) {
+        console.log("Init done: ep_activity=\n");
+        console.table(activity.getall());
+        //TODO: load minimap
+        //TODO: heatmap.load(activity.getall()); [works but not nice for other devs doing their work]
+      }
     }
 
 

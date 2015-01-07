@@ -3,7 +3,6 @@
         {
             "name":"heatmap",
             "hooks": {
-                "eejsBlock_afterEditbar":"ep_heatmap/hooks",
                 "eejsBlock_editbarMenuRight":"ep_heatmap/hooks",
                 "eejsBlock_scripts":"ep_heatmap/hooks",
                 "eejsBlock_styles":"ep_heatmap/hooks"
