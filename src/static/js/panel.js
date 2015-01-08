@@ -13,6 +13,7 @@ var panel = function() {
   var containerPanel = $('#editorcontainer');
   var viewport = $('<div class="viewport"> </div>');
 
+
   var settings = {
     heightRatio : 0.6,
     widthRatio : 0.15,
@@ -39,13 +40,17 @@ var panel = function() {
       console.log('click');
     });
 
+    var outerdoc = $('iframe[name="ace_outer"]').contents().find("#outerdocbody");
+    console.log(outerdoc);
+    // .trigger('change');
+
     // $(window).on('scroll', function() {
     //   _onScrollHandler();
     // });
 
-    // scrollingFrame.on('scroll', function() {
-    //   _onScrollHandler()
-    // });
+    if( outerdoc.is(':animated') ) {
+      console.log("jtzt");
+    }
   }
 
 
@@ -173,28 +178,35 @@ var panel = function() {
     }
   }
 
-//   var _onScrollHandler = function() {
-//     //if(!shown) return;
-//     var s = _scale();
-//     var offsetTop = windowItem.height() * settings.offsetHeightRatio;
-//     var top = containerPanel.offset().top * s.y;
-//     var pos = (windowItem._scrollTop()) * s.y;
-//     var viewportHeight = viewport.outerHeight(true);
-//     var bottom = containerPanel.outerHeight(true) * s.y + top;// - viewportHeight;
+  var _onScrollHandler = function() {
+    //if(!shown) return;
+    var s = _scale();
+    var offsetTop = windowItem.height() * settings.offsetHeightRatio;
 
-//     if(pos + viewportHeight + offsetTop < top || pos >  bottom) {
-//       viewport.css({
-//           display: 'none',
-//       });
-//     } else {
-//       viewport.css({
-//           top : pos + offsetTop - top + 'px',
-//           display : 'block'
-//       });
-//     }
-//   };
+    var top = containerPanel.offset().top * s.y;
+    var pos = $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop * s.y;
+    var viewportHeight = viewport.outerHeight(true);
+    var bottom = containerPanel.outerHeight(true) * s.y + top;// - viewportHeight;
+    if(pos + viewportHeight + offsetTop < top || pos >  bottom) {
+      console.log("if");
+      // viewport.css({
+      //     display: 'none',
+      // });
+      viewport.css({
+          top : pos + offsetTop - top + 'px',
+          display : 'block'
+      });
+    } else {
+      console.log("else");
+      viewport.css({
+          top : pos + offsetTop - top + 'px',
+          display : 'block'
+      });
+      console.log(pos + offsetTop - top + 'px');
+    }
+  };
 
-//   var _scrollTop = function(e) {
+//   var scrollTop = function(e) {
 //             // if(!shown) return;
 //     var s = _scale();
 //     var offsetTop = windowItem.height() * settings.offsetHeightRatio;
@@ -256,12 +268,9 @@ var panel = function() {
       }
       count++;
     });
-  }
 
-  var _onClickHandler = function(event) {
-    event.preventDefault();
-    console.log("click");
-  };
+    _onScrollHandler();
+  }
 
   return {
     init : _init,

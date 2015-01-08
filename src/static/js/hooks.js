@@ -21,12 +21,11 @@ var heatmap = require('./heatmap');
 
 
 exports.documentReady = function(hook_name, args, cb) {
-  panel.init();
+  // panel.init();
   panel.buildPanel();
   $('#showHeatmapButton').click(function() {
     panel.openPanel();
   });
-
 
   $('.heatmap').click(function(e) {
     var target = $(e.target),
@@ -61,6 +60,8 @@ exports.postAceInit = function(hook_name, args, cb) {
   initDelay = initlineNumber;
   initlineNumber = -1;
   initialized=true;
+  panel.init();
+
   return cb();
 };
 
