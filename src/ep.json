@@ -1,4 +1,4 @@
-{
+    {
     "parts": [
         {
             "name":"heatmap",
@@ -11,7 +11,8 @@
             "client_hooks": {
                 "acePostWriteDomLineHTML":"ep_heatmap/static/js/hooks",
                 "postAceInit":"ep_heatmap/static/js/hooks",
-                "aceEditEvent":"ep_heatmap/static/js/hooks"
+                "aceEditEvent":"ep_heatmap/static/js/hooks",
+                "documentReady":"ep_heatmap/static/js/hooks"
             }
          }
     ]

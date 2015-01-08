@@ -5,8 +5,10 @@
  */
 
 var debug = true;
+var panel = require('./panel');
 var activity = require('./activity');
 var heatmap = require('./heatmap');
+// var panel = require('./panel');
 
 
 /**
@@ -17,6 +19,27 @@ var heatmap = require('./heatmap');
  */
  var initialized = false, initDelay=0, initlineNumber=-1;
 
+
+exports.documentReady = function(hook_name, args, cb) {
+  panel.init();
+  panel.buildPanel();
+  $('#showHeatmapButton').click(function() {
+    panel.openPanel();
+  });
+
+
+  $('.heatmap').click(function(e) {
+    var target = $(e.target),
+        lineNumber;
+    if ( target.is( "span" ) ) {
+      // get clicked line number
+      lineNumber = parseInt(target.parent()[0].id.substring(10));
+      panel.scrollToLine(lineNumber);
+    }
+  });
+
+  return cb();
+}
 
 /**
  * postAceInit Hook
@@ -71,7 +94,6 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
         //TODO: heatmap.load(activity.getall()); [works but not nice for other devs doing their work]
       }
     }
-
 
     /*
      * Check for paste or delete
@@ -146,6 +168,9 @@ function getDivArray() {
   return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
 };
 
+function showHeatMap() {
+  console.log("show");
+}
 
 /**
  * reduces the given magicdomid {String} (exp.: magicdomid42)
