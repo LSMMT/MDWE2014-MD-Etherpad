@@ -92,7 +92,7 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
         console.log("Init done: ep_activity=\n");
         console.table(activity.getall());
         //TODO: load minimap
-        //TODO: heatmap.load(activity.getall()); [works but not nice for other devs doing their work]
+        heatmap.load(activity.getall()); [works but not nice for other devs doing their work]
       }
     }
 
@@ -168,10 +168,6 @@ exports.aceEditEvent = function(hook_name, args, cb) {
 function getDivArray() {
   return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
 };
-
-function showHeatMap() {
-  console.log("show");
-}
 
 /**
  * reduces the given magicdomid {String} (exp.: magicdomid42)

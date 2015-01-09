@@ -4,6 +4,8 @@
  * @class activity
  */
 
+ var panel = require('./panel');
+
 var activity = function() {
 
   var debug = true;
@@ -13,9 +15,9 @@ var activity = function() {
    * structure:
    *    key => [ divid, activity ]
    *    ... with key = linenumber-1
-   *    
+   *
    * }
-   * 
+   *
    * @property ep_activity
    * @type {Array}
    */
@@ -23,7 +25,7 @@ var activity = function() {
 
   /**
    * default settings
-   * 
+   *
    * @property settings
    * @type {Object}
    */
@@ -89,6 +91,7 @@ var activity = function() {
    */
   var changeEvent = function(start_line, amount) {
     amount = (typeof amount === "undefined") ? 1 : amount;
+    // panel.setHeatmapContent();
 
     if (debug) console.log("->activity.changeEvent("+start_line+", "+amount+")");
     //TODO: update minimap
@@ -134,7 +137,7 @@ var activity = function() {
     decay : _decay,
     getall : _getall
   };
-  
+
 }();
 
 module.exports = activity;

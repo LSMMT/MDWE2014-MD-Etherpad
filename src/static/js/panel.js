@@ -15,9 +15,9 @@ var panel = function() {
 
 
   var settings = {
-    heightRatio : 0.6,
+    heightRatio : 0.3,
     widthRatio : 0.15,
-    offsetHeightRatio : 0.085,
+    offsetHeightRatio : 0.13,
     offsetWidthRatio : 0.015,
     position : "right",
     touch: true,
@@ -88,20 +88,23 @@ var panel = function() {
   }
 
   var _setHeatmapContent = function() {
-    var content = getElementByIdInFrames("innerdocbody", window).innerHTML;
+    if ($('.heatmapContent').length) {
+      $('.heatmapContent').remove();
+    } else {
+      var content = getElementByIdInFrames("innerdocbody", window).innerHTML;
     $('<div class="heatmapContent">'+content+'</div>').appendTo( ".heatmap" );
-    _onResizeHandler();
+      _onResizeHandler();
+    }
+
   };
 
   var _onResizeHandler = function() {
     var heatmapPanel = $('.heatmap');
+    var pos;
 
     var innerFrameHeight = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height.slice(0,-2));
     var innerFrameWidth = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.width.slice(0,-2));
     var outerFrameHeight = document.getElementsByName("ace_outer")[0].style.height;
-
-    // console.log(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height);
-    // console.log($('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].style.height);
 
     var s = _scale();
     var sc = 'scale(' + s.x + ','+ s.y + ')';
@@ -141,17 +144,23 @@ var panel = function() {
 
     heatmapPanel.css(css);
 
-    var viewportTop = containerPanel.offset().top * s.y;
+    // var viewportTop = containerPanel.offset().top * s.y;
+    var viewportTop = containerPanel.offset().top;
+
+    // Positionierung Viewport Top
+    if ($('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop == 0) {
+      console.log("start");
+      var viewportTop = containerPanel.offset().top;
+    } else {
+      var viewportTop = containerPanel.offset().top * s.y;
+    }
+
     var cssViewport = {
         width : containerPanel.width() * s.x,
-        // height: innerFrameHeight * s.y,
-        // height : $('#editorcontainerbox').height() * s.y,
-        // height : windowItem.height() * s.y,
         height: containerPanel.height() * s.y,
         margin : '0px',
-        top : windowItem.scrollTop() * s.y + offsetTop - viewportTop + 'px'
+        top : $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop  * s.y + offsetTop - viewportTop + 'px'
     };
-
     cssViewport[settings.position] = offsetLeftRight + 'px';
     viewport.css(cssViewport);
 
@@ -181,14 +190,21 @@ var panel = function() {
   var _onScrollHandler = function() {
     //if(!shown) return;
     var s = _scale();
+    var innerFrameHeight = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height.slice(0,-2));
+
     var offsetTop = windowItem.height() * settings.offsetHeightRatio;
+    // var offsetTop = innerFrameHeight * settings.offsetHeightRatio;
 
     var top = containerPanel.offset().top * s.y;
+
     var pos = $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop * s.y;
+
     var viewportHeight = viewport.outerHeight(true);
+
     var bottom = containerPanel.outerHeight(true) * s.y + top;// - viewportHeight;
+
     if(pos + viewportHeight + offsetTop < top || pos >  bottom) {
-      console.log("if");
+      // console.log("if");
       // viewport.css({
       //     display: 'none',
       // });
@@ -197,15 +213,30 @@ var panel = function() {
           display : 'block'
       });
     } else {
-      console.log("else");
+      // console.log("else");
       viewport.css({
           top : pos + offsetTop - top + 'px',
           display : 'block'
       });
-      console.log(pos + offsetTop - top + 'px');
+
+      // viewport.animate({scrollTop: top});
     }
   };
 
+  // var _onScrollHandler = function() {
+  //   var s = _scale();
+  //   var innerFrameHeight = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height.slice(0,-2));
+  //   var innerFrameHeightOffset = $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop;
+
+  //   var top = innerFrameHeightOffset * s.y;
+
+  //   console.log(top);
+
+  //   viewport.css({
+  //     top : top,
+  //     display : 'block'
+  //   });
+  // }
 //   var scrollTop = function(e) {
 //             // if(!shown) return;
 //     var s = _scale();
@@ -257,6 +288,7 @@ var panel = function() {
 
   var _scrollToLine = function(lineNumber){
     var count = 1;
+    console.log(lineNumber);
     $('iframe[name="ace_outer"]').contents().find('iframe').contents().find("#innerdocbody").contents().each(function(){
       if(count == lineNumber){
         var newY = $(this).context.offsetTop + "px";
@@ -268,7 +300,6 @@ var panel = function() {
       }
       count++;
     });
-
     _onScrollHandler();
   }
 
@@ -277,7 +308,9 @@ var panel = function() {
     buildPanel : _buildPanel,
     openPanel : _openPanel,
     onResizeHandler : _onResizeHandler,
-    scrollToLine : _scrollToLine
+    scrollToLine : _scrollToLine,
+    onScrollHandler : _onScrollHandler,
+    setHeatmapContent : _setHeatmapContent
 
   };
 
