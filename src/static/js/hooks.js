@@ -92,7 +92,7 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
         console.log("Init done: ep_activity=\n");
         console.table(activity.getall());
         //TODO: load minimap
-        heatmap.load(activity.getall()); [works but not nice for other devs doing their work]
+        heatmap.load(activity.getall()); //[works but not nice for other devs doing their work]
       }
     }
 
