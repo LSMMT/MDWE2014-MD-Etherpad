@@ -121,12 +121,14 @@ var activity = function() {
 
 
   /**
-   * returns ep_activity array
+   * returns copy of ep_activity array
+   * so it's not possible to directly change the epactivity
+   * outside the module
    *
    * @method _getall
    */
   var _getall = function() {
-    return ep_activity;
+      return ep_activity.slice();
   };
 
 
