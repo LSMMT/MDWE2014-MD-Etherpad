@@ -10,32 +10,32 @@ The final result should end up in a separate repository to remove unnecessary ov
 ## Installation
 Follow these steps to install the ep_heatmap plugin
 
-1. Get our [etherpad-lite](https://github.com/hb0/etherpad-lite) fork (only for developement)
+Get our [etherpad-lite](https://github.com/hb0/etherpad-lite) fork (only for developement)
 ```
 git clone https://github.com/hb0/etherpad-lite
 ```
 
-2. create a *plugins-available* folder into your etherpad-lite directory
+create a *plugins-available* folder into your etherpad-lite directory
 ```
 mkdir /path/to/etherpad-lite/plugins-available
 ```
 
-3. Symlink the ep_heatmap plugin to this folder
+Symlink the ep_heatmap plugin to this folder
 ```
 ln -s /path/to/MDWE2014-MD-Etherpad/src /path/to/etherpad-lite/plugins-available/ep_heatmap
 ```
 
-4. Change to etherpad-lite directory
+Change to etherpad-lite directory
 ```
 cd /path/to/etherpad-lite
 ```
 
-5. install the plugin
+install the plugin
 ```
 npm install plugins-available/ep_heatmap
 ```
 
-6. run etherpad-lite
+run etherpad-lite (for easier development check nodemon-section below)
 ```
 sh bin/run.sh
 ```
