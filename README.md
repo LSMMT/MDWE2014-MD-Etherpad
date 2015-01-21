@@ -43,3 +43,36 @@ sh bin/run.sh
 ### TODO
 Make installation process easier, with symlink directly in the node_modules directory of etherpad-lite
 (check the eejs-dependency in the src/hooks.js file)
+
+## Development
+### Nodemon
+Development ist a lot easier, when you use nodemon while developing. 
+Just install it via ```npm install -g nodemon```.
+After that create a ```nodemon.json``` file in your etherpad-lite directory. The
+content of ```nodemon.js```should be:
+```
+{
+  "restartable": "rs",
+  "ignore": [
+    ".git"
+  ],
+  "verbose": true,
+  "execMap": {
+    "js": "node --harmony"
+  },
+  "watch": [
+    "test/fixtures/",
+      "test/samples/",
+      "node_modules/ep_heatmap/"
+  ],
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "ext": "js json"
+}
+```
+
+After that start etherpad via:
+```
+nodemon node_modules/ep_etherpad-lite/node/server.js
+```
