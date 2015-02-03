@@ -17,27 +17,27 @@ var heatmap = require('./heatmap');
  * @type {Boolean}
  * @default false
  */
- var initialized = false, initDelay=0, initlineNumber=-1;
+var initialized = false, initDelay=0, initlineNumber=-1;
 
 
 exports.documentReady = function(hook_name, args, cb) {
-  // panel.init();
-  panel.buildPanel();
-  $('#showHeatmapButton').click(function() {
-    panel.openPanel();
-  });
+    // panel.init();
+    panel.buildPanel();
+    $('#showHeatmapButton').click(function() {
+        panel.openPanel();
+    });
 
-  $('.heatmap').click(function(e) {
-    var target = $(e.target),
-        lineNumber;
-    if ( target.is( "span" ) ) {
-      // get clicked line number
-      lineNumber = parseInt(target.parent()[0].id.substring(10));
-      panel.scrollToLine(lineNumber);
-    }
-  });
+    $('.heatmap').click(function(e) {
+        var target = $(e.target),
+            lineNumber;
+        if ( target.is( "span" ) ) {
+            // get clicked line number
+            lineNumber = parseInt(target.parent()[0].id.substring(10));
+            panel.scrollToLine(lineNumber);
+        }
+    });
 
-  return cb();
+    return cb();
 };
 
 /**
@@ -52,17 +52,32 @@ exports.documentReady = function(hook_name, args, cb) {
  */
 exports.postAceInit = function(hook_name, args, cb) {
 
-  /**
-   * Init process
-   */
-  if (debug) console.log("postAceInit-event");
-  if (debug) console.log("delay: "+initlineNumber); // changeset used for init
-  initDelay = initlineNumber;
-  initlineNumber = -1;
-  initialized=true;
-  panel.init();
+    /**
+     * Init process
+     */
+    if (debug) console.log("postAceInit-event");
+    if (debug) console.log("delay: "+initlineNumber); // changeset used for init
+    initDelay = initlineNumber;
+    initlineNumber = -1;
+    initialized=true;
+    panel.init();
 
-  return cb();
+    // for debug purposes
+    activity.register(function(lineNumber) {
+        console.log("SCROLL TO: " + lineNumber) ;
+    });
+
+    setInterval(function() {
+        activity.decay();
+    }, 1000);
+    setInterval(function() {
+        var divArray = getDivArray();
+        activity.evalArray(divArray, function() {
+            
+        });
+    }, 500);
+
+    return cb();
 };
 
 
@@ -79,14 +94,15 @@ exports.postAceInit = function(hook_name, args, cb) {
 exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
     // retrive div-array from editor container
     // eval it for changes - non blocking
-    if(initialized) {
-        var divArray = getDivArray();
-        activity.evalArray(divArray, function() {
+   /* if(initialized) {
+        //var divArray = getDivArray();
+        //activity.evalArray(divArray, function() {
             cb();
         });
     } else {
         cb();
-    }
+    } */
+     
     
 };
 
@@ -103,14 +119,17 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
  */
 exports.aceEditEvent = function(hook_name, args, cb) {
 
-  // Decay of activity
-  // check if the event is the idleWorkTimer,
-  // so we only change the ep_activity table once per second
+    // Decay of activity
+    // check if the event is the idleWorkTimer,
+    // so we only change the ep_activity table once per second
 
-  if (args.callstack.type === "idleWorkTimer")
-    activity.decay();
+    if (args.callstack.type === "idleWorkTimer")
+    {
+        //console.log(args.callstack.type);
+        //activity.decay();
+    }
 
-  return cb();
+    return cb();
 };
 
 
@@ -120,7 +139,7 @@ exports.aceEditEvent = function(hook_name, args, cb) {
  * @return {Array} the div objects
  */
 function getDivArray() {
-  return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
+    return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
 };
 
 

@@ -19,9 +19,15 @@ var activity = function() {
      * }
      *
      * @property ep_activity
-     * @type {Array}
+     * @type {[[Number]]}
      */
     var ep_activity = new Array();
+
+    /**
+     * containing all callbacks,
+     * called when heat on one line is big enough
+     */
+    var hooks = new Array();
 
     /**
      * default settings
@@ -30,30 +36,6 @@ var activity = function() {
      * @type {Object}
      */
     var default_increase_amount = 1;    // default amount for increasing activity
-
-
-    /**
-     * Hook that gets called on every change-event of ep_activity
-     * e.g. to update the mini-/heatmap or to autoscroll of activated
-     * //TODO: überarbeite Hook
-     *
-     * @method changeEvent
-     * @param {Integer} start_line
-     * @param {Integer} amount [amount=1]
-     */
-    var changeEvent = function(start_line, amount) {
-        amount = (typeof amount === "undefined") ? 1 : amount;
-        // panel.setHeatmapContent();
-
-        if (debug) console.log("->activity.changeEvent("+start_line+", "+amount+")");
-        //TODO: update minimap
-        //TODO: decide/do autoscroll
-        //TODO: update heatmap
-        /**
-         * heatmap.update(activity.getall()); // scope problem
-         * if no other solution: instead of passive changeEvent() active _changeEvent(ep_activity) from outside
-         */
-    };
 
 
     /**
@@ -67,10 +49,26 @@ var activity = function() {
         for(var i=0; i<ep_activity.length; i++) {
             if (ep_activity[i][1]>0) {
                 var temp_debug = ep_activity[i][1];
-                ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.05*ep_activity[i][1]) );
+                ep_activity[i][1] = Math.max( 0, ep_activity[i][1]-Math.max(0.01, 0.20*ep_activity[i][1]) );
             }
         }
+        checkForHighestTemperature();
     };
+
+    function checkForHighestTemperature() {
+        var line = -1;
+        var highestTemperature = 0.0;
+        //console.log("-----------------------------------------");
+        ep_activity.forEach(function(element, index) {
+            //console.log(index + " - " + element[1]);
+            if(element[1] > highestTemperature) {
+                line = index;
+            }
+        });
+        hooks.forEach(function(element) {
+            //element(line);
+        });
+    }
 
     /**
      * evaluate div-array from editor for changes.
@@ -90,7 +88,7 @@ var activity = function() {
             for(var i = 0; i < ep_activity.length; i++) {
                 if(ep_activity[i][0] != sanitizedArray[i][0]) {
                     ep_activity[i][0] = sanitizedArray[i][0];
-                    ep_activity[i][1] += default_increase_amount;
+                    ep_activity[i][1] = ep_activity[i][1] + default_increase_amount;
                 }
             }
         } else {
@@ -99,7 +97,6 @@ var activity = function() {
             } 
             ep_activity = sanitizedArray;
         }
-        console.table(ep_activity);
         callback();
     };
 
@@ -134,11 +131,17 @@ var activity = function() {
         return ep_activity.slice();
     };
 
+    var _register = function(callback) {
+        console.log("REGISTER NEW HOOK");
+        hooks.push(callback) ;
+    };
+
 
     return {
         decay : _decay,
         getall : _getall,
-        evalArray: _evalArray
+        evalArray: _evalArray,
+        register: _register
     };
 
 }();
