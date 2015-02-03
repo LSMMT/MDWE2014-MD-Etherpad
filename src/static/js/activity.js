@@ -66,7 +66,7 @@ var activity = function() {
             }
         });
         hooks.forEach(function(element) {
-            //element(line);
+            element(line);
         });
     }
 
@@ -83,7 +83,6 @@ var activity = function() {
             return;
         }
         var sanitizedArray = sanitizeArray(divArray);
-        //TODO: build new heatmap data
         if(ep_activity.length == sanitizedArray.length) {
             for(var i = 0; i < ep_activity.length; i++) {
                 if(ep_activity[i][0] != sanitizedArray[i][0]) {
