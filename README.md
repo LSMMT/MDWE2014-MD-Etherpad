@@ -50,7 +50,7 @@ Development ist a lot easier, when you use nodemon while developing.
 Just install it via ```npm install -g nodemon```.
 After that create a ```nodemon.json``` file in your etherpad-lite directory. The
 content of ```nodemon.js```should be:
-```
+```json
 {
   "restartable": "rs",
   "ignore": [
