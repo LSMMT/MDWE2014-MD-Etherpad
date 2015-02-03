@@ -8,6 +8,7 @@ var debug = true;
 var panel = require('./panel');
 var activity = require('./activity');
 var heatmap = require('./heatmap');
+var minimap = require('./minimap.min');
 // var panel = require('./panel');
 
 
@@ -21,7 +22,11 @@ var heatmap = require('./heatmap');
 
 
 exports.documentReady = function(hook_name, args, cb) {
-  // panel.init();
+  // $('#showHeatmapButton').click(function() {
+  //   panel.openPanel();
+
+  // });
+  panel.init();
   panel.buildPanel();
   $('#showHeatmapButton').click(function() {
     panel.openPanel();
@@ -38,7 +43,7 @@ exports.documentReady = function(hook_name, args, cb) {
   });
 
   return cb();
-};
+}
 
 /**
  * postAceInit Hook
@@ -95,21 +100,44 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
         heatmap.load(activity.getall());
         // [works but not nice for other devs doing their work]
       }
-    } else {
-        // after init process
-        var newArray = getDivArray();
-        var oldArray = activity.getall();
-        console.log(oldArray);
-        var sanitizedArray = new Array();
-        for(var i = 0; i < newArray.length; i++) {
-            var element = newArray[i];
-            var magicdomid = parseInt(element.id.replace("magicdomid", ""));
-            sanitizedArray.push([magicdomid, 0]);
-        }
-        diffArrays(oldArray, sanitizedArray);
     }
 
+    /*
+     * Check for paste or delete
+     * commented to merge it afterwards
+     //TODO: merge
+     */
+    /*
+    var divArr = getDivArray();
 
+
+    if (divArr.length < olddivs) {
+        var diffLength = olddivs.length - divArr.length;
+        for (var i = divArr.length ; i < olddivs.length; i++) {
+            delete olddivs[i];
+        }
+    } else if(divArr.length > olddivs.length) {
+        var diffLength = divArr.length - olddivs.length;
+        for (var i = olddivs.length; i < divArr.length; i++) {
+            var tmp = [];
+            tmp[0] = -1;
+            tmp[1] = 0.0;
+            olddivs[i] = tmp;
+        }
+    }
+
+    for (var i = 0; i < divArr.length; i++) {
+        var oldid = olddivs[i][0];
+        var newid = divArr[i].id.replace("magicdomid", "");
+        if (oldid != newid) {
+            console.log("oldid-"+oldid+" newid-"+newid);
+            olddivs[i][0] = newid;
+            olddivs[i][1] += 1.5;
+
+            console.table(olddivs);
+        }
+    }
+     */
 
     return cb();
 };
@@ -135,7 +163,7 @@ exports.aceEditEvent = function(hook_name, args, cb) {
     activity.decay();
 
   return cb();
-};
+}
 
 
 /**
@@ -147,47 +175,16 @@ function getDivArray() {
   return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
 };
 
-function diffArrays(old, newA) {
-    oldMini = new Array();
-    newMini = new Array();
+/**
+ * reduces the given magicdomid {String} (exp.: magicdomid42)
+ * and returns only the number of the id
+ *
+ * @param {String} magicdomid
+ *
+ * @return {Int} id as String
+ */
+function reduceMagicDomId(magicdomid) {
+    var tmpStr = magicdomid.replace("magicdomid", "");
 
-    newA.forEach(function(element) {
-        newMini.push(element[0]);
-    });
-
-    old.forEach(function(element) {
-        oldMini.push(element[0]) ;
-    });
-
-    if(oldMini.length > newMini.length) {
-        var changedLines = new Array();
-        for(var index = 0; index < newMini.length; index++) {
-            var oldVal = oldMini[index];
-            var newVal = newMini[index];
-            if(oldVal != newVal) { // changed
-                var tmp = oldMini.indexOf(newVal);
-                changedLines.push([index, tmp]);
-            }
-        }
-        changedLines.forEach(function(element) {
-            activity.removeline(element[0], (element[1] - element[0])); 
-        });
-        
-    } else if(oldMini.length < newMini.length) {
-        var changedLines = new Array();
-        for(var index = 0; index < oldMini.length; index++) {
-            var oldVal = oldMini[index];
-            var newVal = newMini[index];
-            if(oldVal != newVal) { // changed
-                var tmp = newMini.indexOf(oldVal);
-                changedLines.push([index, tmp]);
-            }
-        }
-        changedLines.forEach(function(element) {
-            activity.addline(element[0], newA[element[0]][0], (element[1] - element[0]));
-        });
-    } else { // nothing happened
-        return ;
-    }
-   
+    return parseInt(tmpStr);
 };

@@ -7,7 +7,7 @@
 var eejs = require('ep_etherpad-lite/node/eejs');
 
 
-// Client js               (loads static/js/client.js, heatmapconfig.js, heatmap.min.js)
+// Client js               (loads static/js/client.js, heatmapconfig.js, heatmap.min.js, minimap.min.js)
 exports.eejsBlock_scripts = function(hook_name, args, cb) {
 	args.content = args.content + eejs.require("ep_heatmap/templates/scripts.ejs", {}, module);
 	return cb();

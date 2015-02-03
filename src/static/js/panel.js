@@ -10,15 +10,22 @@ var panel = function() {
 
   // Variablen
   var windowItem = $(window);
-  var containerPanel = $('#editorcontainer');
+  var containerPanel = $('#editorcontainerbox');
+  var containerPanelInner = $('#editorcontainer');
   var viewport = $('<div class="viewport"> </div>');
+
+  console.log(containerPanel);
 
 
   var settings = {
-    heightRatio : 0.3,
-    widthRatio : 0.15,
-    offsetHeightRatio : 0.13,
-    offsetWidthRatio : 0.015,
+    // heightRatio : 0.3,
+    // widthRatio : 0.15,
+    // offsetHeightRatio : 0.13,
+    // offsetWidthRatio : 0.015,
+    heightRatio : 0.6,
+    widthRatio : 0.05,
+    offsetHeightRatio : 0.035,
+    offsetWidthRatio : 0.035,
     position : "right",
     touch: true,
     smoothScroll: true,
@@ -69,6 +76,7 @@ var panel = function() {
   }
 
   var _openPanel = function() {
+    // $('body').minimap();
     _buildViewport();
 
     if ($('.heatmapContent').length) {
@@ -114,14 +122,17 @@ var panel = function() {
 
     // var top = containerPanel.height() * (s.y - 1) / 2 + offsetTop;
     // var top = containerPanel.height() * (s.y - 1) / 1 + offsetTop;
-    var top = innerFrameHeight * (s.y - 1) / 2 + offsetTop;
+    // var top = innerFrameHeight * (s.y - 1) / 2 + offsetTop;
     //var leftRight = containerPanel.width() * (s.x - 1) / 2  + offsetLeftRight;
-    var leftRight = containerPanel.width() * (s.x - 1) / 3.5  + offsetLeftRight;
+    // var leftRight = containerPanel.width() * (s.x - 1) / 3.5  + offsetLeftRight;
 
     // var top = containerPanel.height() * (s.y - 1) / 2 + offsetTop;
     // var leftRight = offsetLeftRight;
 
-    var width = innerFrameWidth * (1/s.x) * settings.widthRatio;
+    var top = $('.readwrite').height() + 10;
+
+    // var width = innerFrameWidth * (1/s.x) * settings.widthRatio;
+    var width = containerPanel * (1/s.x) * settings.widthRatio;
     var height = innerFrameHeight  * (1/s.y) * settings.heightRatio;
 
     // var width = containerPanel.width() * (1/s.x) * settings.widthRatio;
@@ -133,44 +144,55 @@ var panel = function() {
         '-ms-transform': sc,
         '-o-transform': sc,
         'transform': sc,
-        'top' : top,
+        'transform-origin':  'right top',
+        'top' : top + 'px',
+        'right' : '30px',
         'width' : width,
         'height' : height,
         'margin' : '0px',
         'padding' : '0px'
     };
 
-    css[settings.position] = leftRight;
+    // hier wird right Abstand gesetzt
+    // css[settings.position] = leftRight;
 
     heatmapPanel.css(css);
 
     // var viewportTop = containerPanel.offset().top * s.y;
     var viewportTop = containerPanel.offset().top;
 
-    // Positionierung Viewport Top
+    // Positionierung Viewport Top - funktioniert nicht weil Werte nicht ausgelesen werden
     if ($('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop == 0) {
-      console.log("start");
-      var viewportTop = containerPanel.offset().top;
+      // var viewportTop = containerPanel.offset().top;
+      var viewportTop = -6;
     } else {
-      var viewportTop = containerPanel.offset().top * s.y;
+      var viewportTop = containerPanelInner.offset().top * s.y;
     }
 
     var cssViewport = {
         width : containerPanel.width() * s.x,
-        height: containerPanel.height() * s.y,
+        height: containerPanelInner.height() * s.y,
         margin : '0px',
-        top : $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop  * s.y + offsetTop - viewportTop + 'px'
+        top : $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop  * s.y + top - viewportTop + 'px',
+        right: '20px'
     };
-    cssViewport[settings.position] = offsetLeftRight + 'px';
+
+    // cssViewport[settings.position] = offsetLeftRight + 'px';
     viewport.css(cssViewport);
 
     settings.onPreviewChange($('.heatmap'), s);
   }
 
   var _scale = function () {
+
+    // TO DO: besser wäre #outerdocbody width
+    var innerFrameHeight = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height.slice(0,-2));
+    var innerFrameWidth = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.width.slice(0,-2));
     return {
-        x: (windowItem.width() / containerPanel.width()) * settings.widthRatio,
-        y: (windowItem.height() / containerPanel.height()) * settings.heightRatio
+        // x: (windowItem.width() / containerPanel.width()) * settings.widthRatio,
+        // y: (windowItem.height() / containerPanel.height()) * settings.heightRatio
+        x: (windowItem.width() / innerFrameWidth) * settings.widthRatio,
+        y: (windowItem.height() / innerFrameHeight) * settings.heightRatio
     };
   }
 
