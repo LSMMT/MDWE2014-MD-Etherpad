@@ -69,7 +69,7 @@ exports.postAceInit = function(hook_name, args, cb) {
 
     // for debug purposes
     activity.register(function(lineNumber) {
-        console.log("SCROLL TO: " + lineNumber) ;
+        panel.scrollToLine(lineNumber);
     });
 
     setInterval(function() {

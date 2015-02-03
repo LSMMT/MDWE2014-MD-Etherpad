@@ -37,6 +37,12 @@ var activity = function() {
      */
     var default_increase_amount = 1;    // default amount for increasing activity
 
+    /**
+     * last called lineNumber on Heat-event
+     * @type {Integer}
+     */
+    var lastCalledLine = -1;
+
 
     /**
      * Decay of activity - gets called once per second from aceEditEvent
@@ -62,12 +68,16 @@ var activity = function() {
         ep_activity.forEach(function(element, index) {
             //console.log(index + " - " + element[1]);
             if(element[1] > highestTemperature) {
-                line = index;
+                line = index+1;
+                highestTemperature = element[1];
             }
         });
-        hooks.forEach(function(element) {
-            element(line);
-        });
+        if(lastCalledLine != line) {
+            lastCalledLine = line;
+            hooks.forEach(function(element) {
+                element(line);
+            });    
+        }
     }
 
     /**
