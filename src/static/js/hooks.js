@@ -77,41 +77,17 @@ exports.postAceInit = function(hook_name, args, cb) {
  * @return {function} return of the cb
  */
 exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
-
-    /**
-     * Init process
-     */
-    var lineDivId = args.node.id.substring(10);
-    if (!initialized) initlineNumber++;// Pre init process
-    else if (initDelay>0) {
-      initlineNumber++;
-      initDelay--;
-      activity.addline(initlineNumber+1, lineDivId);
-      //console.log("init lineDivId ("+lineDivId+") initlineNumber("+initlineNumber+")");
-      if (initDelay===0) {
-        console.log("Init done: ep_activity=\n");
-        console.table(activity.getall());
-        //TODO: load minimap
-        heatmap.load(activity.getall());
-        // [works but not nice for other devs doing their work]
-      }
+    // retrive div-array from editor container
+    // eval it for changes - non blocking
+    if(initialized) {
+        var divArray = getDivArray();
+        activity.evalArray(divArray, function() {
+            cb();
+        });
     } else {
-        // after init process
-        var newArray = getDivArray();
-        var oldArray = activity.getall();
-        console.log(oldArray);
-        var sanitizedArray = new Array();
-        for(var i = 0; i < newArray.length; i++) {
-            var element = newArray[i];
-            var magicdomid = parseInt(element.id.replace("magicdomid", ""));
-            sanitizedArray.push([magicdomid, 0]);
-        }
-        diffArrays(oldArray, sanitizedArray);
+        cb();
     }
-
-
-
-    return cb();
+    
 };
 
 
@@ -147,47 +123,4 @@ function getDivArray() {
   return document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].contentDocument.getElementById("innerdocbody").children;
 };
 
-function diffArrays(old, newA) {
-    oldMini = new Array();
-    newMini = new Array();
 
-    newA.forEach(function(element) {
-        newMini.push(element[0]);
-    });
-
-    old.forEach(function(element) {
-        oldMini.push(element[0]) ;
-    });
-
-    if(oldMini.length > newMini.length) {
-        var changedLines = new Array();
-        for(var index = 0; index < newMini.length; index++) {
-            var oldVal = oldMini[index];
-            var newVal = newMini[index];
-            if(oldVal != newVal) { // changed
-                var tmp = oldMini.indexOf(newVal);
-                changedLines.push([index, tmp]);
-            }
-        }
-        changedLines.forEach(function(element) {
-            activity.removeline(element[0], (element[1] - element[0])); 
-        });
-        
-    } else if(oldMini.length < newMini.length) {
-        var changedLines = new Array();
-        for(var index = 0; index < oldMini.length; index++) {
-            var oldVal = oldMini[index];
-            var newVal = newMini[index];
-            if(oldVal != newVal) { // changed
-                var tmp = newMini.indexOf(oldVal);
-                changedLines.push([index, tmp]);
-            }
-        }
-        changedLines.forEach(function(element) {
-            activity.addline(element[0], newA[element[0]][0], (element[1] - element[0]));
-        });
-    } else { // nothing happened
-        return ;
-    }
-   
-};
