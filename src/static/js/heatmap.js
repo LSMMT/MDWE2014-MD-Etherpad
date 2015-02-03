@@ -7,7 +7,7 @@
 var heatmap = function() {
 
   var heatmapInstance;
-  
+
 
   // load heatmap
   var _load = function(ep_activity) {
@@ -83,7 +83,7 @@ var heatmap = function() {
     update : _update,
     load : _load
   };
-  
+
 }();
 
 module.exports = heatmap;

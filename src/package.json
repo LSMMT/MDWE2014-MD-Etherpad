@@ -1,32 +1,19 @@
+
 {
-  "name": "ep_heatmap",
-  "version": "0.1.0",
-  "keywords": [
-    "heatmap",
-    "viewport",
-    "autoscroll",
-    "beamer mode",
-    "etherpad-lite plugin"
-  ],
-  "description": "Adds a heatmap for recent activities with viewport and autoscroll",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hb0/etherpad-lite"
-  },
-  "dependencies": {},
-  "engines": {
-    "node": "*"
-  },
-  "license": "MIT",
-  "readme": "under development, non-working version - sorry\n====================\n\nthis is just a test publish, we'll provide a working version in a couple of weeks.",
-  "readmeFilename": "README.md",
-  "bugs": {
-    "url": "https://github.com/hb0/etherpad-lite/issues"
-  },
-  "homepage": "https://github.com/hb0/etherpad-lite",
-  "_id": "ep_heatmap@0.1.0",
-  "scripts": {},
-  "_shasum": "97250e8201dd2753ca608f3c81e073c6e3288802",
-  "_from": "plugins-available/ep_heatmap",
-  "_resolved": "file:plugins-available/ep_heatmap"
+    "name":"ep_heatmap",
+    "version":"0.1.0",
+    "keywords":"heatmap, viewport, autoscroll, beamer mode, etherpad-lite plugin",
+    "description":"Adds a heatmap for recent activities with viewport and autoscroll",
+
+    "repository": {
+        "type":"git",
+        "url":"https://github.com/hb0/etherpad-lite"
+    },
+
+    "dependencies":{},
+    "engines": {
+        "node":"*"
+    },
+
+   "license": "MIT"
 }

@@ -69,6 +69,7 @@ var activity = function() {
             element(line);
         });
     }
+<<<<<<< HEAD
 
     /**
      * evaluate div-array from editor for changes.

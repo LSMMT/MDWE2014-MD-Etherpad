@@ -8,6 +8,7 @@ var debug = true;
 var panel = require('./panel');
 var activity = require('./activity');
 var heatmap = require('./heatmap');
+var minimap = require('./minimap.min');
 // var panel = require('./panel');
 
 
@@ -21,24 +22,28 @@ var initialized = false, initDelay=0, initlineNumber=-1;
 
 
 exports.documentReady = function(hook_name, args, cb) {
-    // panel.init();
-    panel.buildPanel();
-    $('#showHeatmapButton').click(function() {
-        panel.openPanel();
-    });
+  // $('#showHeatmapButton').click(function() {
+  //   panel.openPanel();
 
-    $('.heatmap').click(function(e) {
-        var target = $(e.target),
-            lineNumber;
-        if ( target.is( "span" ) ) {
-            // get clicked line number
-            lineNumber = parseInt(target.parent()[0].id.substring(10));
-            panel.scrollToLine(lineNumber);
-        }
-    });
+  // });
+  panel.init();
+  panel.buildPanel();
+  $('#showHeatmapButton').click(function() {
+    panel.openPanel();
+  });
 
-    return cb();
-};
+  $('.heatmap').click(function(e) {
+    var target = $(e.target),
+        lineNumber;
+    if ( target.is( "span" ) ) {
+      // get clicked line number
+      lineNumber = parseInt(target.parent()[0].id.substring(10));
+      panel.scrollToLine(lineNumber);
+    }
+  });
+
+  return cb();
+}
 
 /**
  * postAceInit Hook
@@ -92,18 +97,22 @@ exports.postAceInit = function(hook_name, args, cb) {
  * @return {function} return of the cb
  */
 exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
-    // retrive div-array from editor container
-    // eval it for changes - non blocking
-   /* if(initialized) {
-        //var divArray = getDivArray();
-        //activity.evalArray(divArray, function() {
-            cb();
-        });
-    } else {
-        cb();
-    } */
-     
-    
+
+    /**
+     * Init process
+     */
+    if (!initialized) initlineNumber++;// Pre init process
+    else if (initDelay>0) {
+      initlineNumber++;
+      initDelay--;
+      if (initDelay===0) {
+        //TODO: load minimap
+        heatmap.load(activity.getall());
+        // [works but not nice for other devs doing their work]
+      }
+    }
+
+    return cb();
 };
 
 
@@ -123,12 +132,6 @@ exports.aceEditEvent = function(hook_name, args, cb) {
     // check if the event is the idleWorkTimer,
     // so we only change the ep_activity table once per second
 
-    if (args.callstack.type === "idleWorkTimer")
-    {
-        //console.log(args.callstack.type);
-        //activity.decay();
-    }
-
     return cb();
 };
 
@@ -143,3 +146,16 @@ function getDivArray() {
 };
 
 
+/**
+ * reduces the given magicdomid {String} (exp.: magicdomid42)
+ * and returns only the number of the id
+ *
+ * @param {String} magicdomid
+ *
+ * @return {Int} id as String
+ */
+function reduceMagicDomId(magicdomid) {
+    var tmpStr = magicdomid.replace("magicdomid", "");
+
+    return parseInt(tmpStr);
+};
