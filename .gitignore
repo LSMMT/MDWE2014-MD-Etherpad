@@ -31,4 +31,4 @@ build/Release
 .lock-wscript
 
 # tern-port
-/**/tern-port
+src/static/js/.tern-port
