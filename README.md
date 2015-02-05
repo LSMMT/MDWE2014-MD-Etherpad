@@ -63,7 +63,7 @@ content of ```nodemon.js```should be:
   "watch": [
     "test/fixtures/",
       "test/samples/",
-      "node_modules/ep_heatmap/"
+      "node_modules/ep_heatmap/**/*"
   ],
   "env": {
     "NODE_ENV": "development"

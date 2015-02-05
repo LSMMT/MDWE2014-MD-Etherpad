@@ -22,28 +22,28 @@ var initialized = false, initDelay=0, initlineNumber=-1;
 
 
 exports.documentReady = function(hook_name, args, cb) {
-  // $('#showHeatmapButton').click(function() {
-  //   panel.openPanel();
+    // $('#showHeatmapButton').click(function() {
+    //   panel.openPanel();
 
-  // });
-  panel.init();
-  panel.buildPanel();
-  $('#showHeatmapButton').click(function() {
-    panel.openPanel();
-  });
+    // });
+    panel.init();
+    panel.buildPanel();
+    $('#showHeatmapButton').click(function() {
+        panel.openPanel();
+    });
 
-  $('.heatmap').click(function(e) {
-    var target = $(e.target),
-        lineNumber;
-    if ( target.is( "span" ) ) {
-      // get clicked line number
-      lineNumber = parseInt(target.parent()[0].id.substring(10));
-      panel.scrollToLine(lineNumber);
-    }
-  });
+    $('.heatmap').click(function(e) {
+        var target = $(e.target),
+            lineNumber;
+        if ( target.is( "span" ) ) {
+            // get clicked line number
+            lineNumber = parseInt(target.parent()[0].id.substring(10));
+            panel.scrollToLine(lineNumber);
+        }
+    });
 
-  return cb();
-}
+    return cb();
+};
 
 /**
  * postAceInit Hook
@@ -103,13 +103,13 @@ exports.acePostWriteDomLineHTML = function(hook_name, args, cb) {
      */
     if (!initialized) initlineNumber++;// Pre init process
     else if (initDelay>0) {
-      initlineNumber++;
-      initDelay--;
-      if (initDelay===0) {
-        //TODO: load minimap
-        heatmap.load(activity.getall());
-        // [works but not nice for other devs doing their work]
-      }
+        initlineNumber++;
+        initDelay--;
+        if (initDelay===0) {
+            //TODO: load minimap
+            heatmap.load(activity.getall());
+            // [works but not nice for other devs doing their work]
+        }
     }
 
     return cb();
