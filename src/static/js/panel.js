@@ -48,16 +48,12 @@ var panel = function() {
     });
 
     var outerdoc = $('iframe[name="ace_outer"]').contents().find("#outerdocbody");
-    console.log(outerdoc);
     // .trigger('change');
 
     // $(window).on('scroll', function() {
     //   _onScrollHandler();
     // });
 
-    if( outerdoc.is(':animated') ) {
-      console.log("jtzt");
-    }
   }
 
 
@@ -108,7 +104,6 @@ var panel = function() {
 
   var _onResizeHandler = function() {
     var heatmapPanel = $('.heatmap');
-    var pos;
 
     var innerFrameHeight = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height.slice(0,-2));
     var innerFrameWidth = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.width.slice(0,-2));
@@ -116,14 +111,13 @@ var panel = function() {
 
     var s = _scale();
     var sc = 'scale(' + s.x + ','+ s.y + ')';
-
     var offsetTop = windowItem.height() * settings.offsetHeightRatio;
     var offsetLeftRight = windowItem.width() * settings.offsetWidthRatio;
 
     // var top = containerPanel.height() * (s.y - 1) / 2 + offsetTop;
     // var top = containerPanel.height() * (s.y - 1) / 1 + offsetTop;
     // var top = innerFrameHeight * (s.y - 1) / 2 + offsetTop;
-    //var leftRight = containerPanel.width() * (s.x - 1) / 2  + offsetLeftRight;
+    // var leftRight = containerPanel.width() * (s.x - 1) / 2  + offsetLeftRight;
     // var leftRight = containerPanel.width() * (s.x - 1) / 3.5  + offsetLeftRight;
 
     // var top = containerPanel.height() * (s.y - 1) / 2 + offsetTop;
@@ -159,21 +153,25 @@ var panel = function() {
     heatmapPanel.css(css);
 
     // var viewportTop = containerPanel.offset().top * s.y;
-    var viewportTop = containerPanel.offset().top;
+    // var viewportTop = containerPanel.offset().top;
 
     // Positionierung Viewport Top - funktioniert nicht weil Werte nicht ausgelesen werden
+
     if ($('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop == 0) {
       // var viewportTop = containerPanel.offset().top;
       var viewportTop = -6;
+      // var viewportTop = $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop;
     } else {
-      var viewportTop = containerPanelInner.offset().top * s.y;
+      // var viewportTop = containerPanelInner.offset().top * s.y;
+      var viewportTop = $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop * s.y;
     }
 
+
     var cssViewport = {
-        width : containerPanel.width() * s.x,
-        height: containerPanelInner.height() * s.y,
+        width : containerPanel.width() * s.x + 10,
+        height: containerPanelInner.height() * s.y / 2,
         margin : '0px',
-        top : $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop  * s.y + top - viewportTop + 'px',
+        top : $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop  * s.y + top - viewportTop,
         right: '20px'
     };
 
@@ -245,75 +243,12 @@ var panel = function() {
     }
   };
 
-  // var _onScrollHandler = function() {
-  //   var s = _scale();
-  //   var innerFrameHeight = parseFloat(document.getElementsByName("ace_outer")[0].contentDocument.getElementsByName("ace_inner")[0].style.height.slice(0,-2));
-  //   var innerFrameHeightOffset = $('iframe[name="ace_outer"]').contents().find("#outerdocbody")[0].scrollTop;
-
-  //   var top = innerFrameHeightOffset * s.y;
-
-  //   console.log(top);
-
-  //   viewport.css({
-  //     top : top,
-  //     display : 'block'
-  //   });
-  // }
-//   var scrollTop = function(e) {
-//             // if(!shown) return;
-//     var s = _scale();
-//     var offsetTop = windowItem.height() * settings.offsetHeightRatio;
-//     var top = containerPanel.offset().top * s.y;
-//     var target = (e.clientY  - offsetTop + top) / s.y;
-
-//     if(e.type === 'click' && settings.smoothScroll) {
-//         var current = windowItem.scrollTop();
-//         var maxTarget = containerPanel.outerHeight(true);
-//         target = Math.max(target, Math.min(target, maxTarget));
-//         var direction = target > current;
-//         var delay = settings.smoothScrollDelay;
-//         var distance = Math.abs(current - target);
-//         var r = delay / distance;
-//         var unitScroll = 1;
-//         var unitDelay = 4;
-//         if(r >= 4) {
-//             unitDelay = parseInt(unitScroll);
-//         } else if(r >= 1) {
-//             unitScroll = parseInt(r) * 4;
-//         } else {
-//             unitScroll = (4 / r);
-//         }
-
-//         var next = current;
-//         var count = parseInt(distance / unitScroll);
-//         onSmoothScroll = true;
-
-//         console.log("if");
-//         // linear translate
-//         var smoothScroll = function() {
-//             next = next + (direction ? unitScroll : -unitScroll);
-//             if(--count <= 0) {
-//                 clearInterval(timer);
-//                 onSmoothScroll = false;
-//                 next = target;
-//             }
-//             windowItem.scrollTop(next);
-//         };
-//         var timer = window.setInterval(smoothScroll, unitDelay);
-//     } else {
-//         console.log("else");
-//         // windowItem.scrollTop(target);
-//         $('#editorcontainerbox').scrollTop(target);
-//     }
-//     e.stopPropagation();
-// };
-
   var _scrollToLine = function(lineNumber){
     var count = 1;
-    console.log(lineNumber);
-    $('iframe[name="ace_outer"]').contents().find('iframe').contents().find("#innerdocbody").contents().each(function(){
+    $('iframe[name="ace_outer"]').contents().find('iframe').contents().find("#innerdocbody").contents().each(function() {
       if(count == lineNumber){
         var newY = $(this).context.offsetTop + "px";
+        console.log(newY);
         var $outerdoc = $('iframe[name="ace_outer"]').contents().find("#outerdocbody");
         var $outerdocHTML = $('iframe[name="ace_outer"]').contents().find("#outerdocbody").parent();
         $outerdoc.animate({scrollTop: newY});
@@ -322,7 +257,8 @@ var panel = function() {
       }
       count++;
     });
-    _onScrollHandler();
+    // _onScrollHandler();
+    _onResizeHandler();
   }
 
   return {
