@@ -78,7 +78,7 @@ exports.postAceInit = function(hook_name, args, cb) {
     setInterval(function() {
         var divArray = getDivArray();
         activity.evalArray(divArray, function() {
-            
+
         });
     }, 500);
 
